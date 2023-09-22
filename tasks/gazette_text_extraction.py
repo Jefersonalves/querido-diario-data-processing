@@ -31,7 +31,7 @@ def extract_text_from_gazettes(
 
     for gazette in gazettes:
         try:
-            print("Lugar certo")
+
             if str(gazette["territory_id"][-4:]).strip() == "0000":
 
                 association_ids = try_process_gazette_association_file(
@@ -53,8 +53,7 @@ def extract_text_from_gazettes(
                     ids.append(association["file_checksum"])
             else:
                 ids.append(processed_gazette["file_checksum"])
-
-
+        
     return ids
 
 
@@ -101,9 +100,13 @@ def try_process_gazette_association_file(
 
     for diario in diarios:
 
-        storage.upload_content(diario["file_raw_txt"], diario["source_text"])
-        register_gazette(diario, database)
-        index.index_document(diario, document_id=diario["file_checksum"])
+        duplicates = seach_for_duplicate(diario, database)
+        if not duplicates:
+            storage.upload_content(diario["file_raw_txt"], diario["source_text"])
+            register_gazette(diario, database)
+            index.index_document(diario, document_id=diario["file_checksum"])
+        else:
+            logging.debug(f"Diario já registrado!!!")
 
     delete_gazette_files(pdf)
     set_gazette_as_processed(gazette, database)
@@ -298,3 +301,24 @@ def register_gazette(gazette: Dict, database: DatabaseInterface) -> None:
     }
     logging.debug(f"Registrando {id}({checksum})!!!")
     database.insert(command, data)
+
+
+def seach_for_duplicate(gazette: Dict, database: DatabaseInterface) -> list:
+    command = """
+        SELECT * FROM gazettes
+        WHERE date = %(date)s
+        AND file_checksum = %(file_checksum)s
+        AND territory_id = %(territory_id)s
+    ;
+    """
+    data = {
+        "date": gazette["date"],
+        "file_checksum": gazette["file_checksum"],
+        "territory_id": gazette["territory_id"],
+    }
+
+    duplicates = [duplicate for duplicate in database.select(command, data)]
+
+    return duplicates
+
+

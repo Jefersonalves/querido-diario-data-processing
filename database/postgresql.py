@@ -49,9 +49,12 @@ class PostgreSQL(DatabaseInterface):
             cursor.execute(command, data)
             self._connection.commit()
 
-    def select(self, command: str) -> Iterable[Tuple]:
+    def select(self, command: str, data: Dict = {}) -> Iterable[Tuple]:
         with self._connection.cursor() as cursor:
-            cursor.execute(command)
+            if data:
+                cursor.execute(command, data)
+            else:
+                cursor.execute(command)
             logging.debug(f"Starting query: {cursor.query}")
             for entry in cursor:
                 logging.debug(entry)
