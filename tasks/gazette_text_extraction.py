@@ -99,7 +99,7 @@ def try_process_gazette_association_file(
     )
 
     for diario in diarios:
-
+        
         duplicates = seach_for_duplicate(diario, database)
         if not duplicates:
             storage.upload_content(diario["file_raw_txt"], diario["source_text"])

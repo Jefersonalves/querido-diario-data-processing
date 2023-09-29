@@ -50,7 +50,7 @@ class Diario:
     }
 
     def __init__(self, municipio: Municipio, cabecalho: str, texto: str, pdf_path: dict, territories: list):
-
+          
         self.territory_id, self.territory_name, self.state_code = get_territorie_info(
             name=municipio.nome,
             state=cabecalho.split(",")[0],

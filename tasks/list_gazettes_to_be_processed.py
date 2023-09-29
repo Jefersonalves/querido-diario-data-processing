@@ -127,7 +127,8 @@ def get_unprocessed_gazettes(
 def get_territories_gazettes(
     database: DatabaseInterface,
 ) -> Iterable[Dict]:
-
+    territories=[]
+    
     command = """
     SELECT 
         *
@@ -136,8 +137,9 @@ def get_territories_gazettes(
     ;
     """
     for territorie in database.select(command):
-        yield format_territories_data(territorie)
-
+        territories.append(format_territories_data(territorie))
+    
+    return territories
 
 def format_gazette_data(data):
     return {
