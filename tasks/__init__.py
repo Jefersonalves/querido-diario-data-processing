@@ -9,4 +9,7 @@ from .interfaces import (
     IndexInterface,
     TextExtractorInterface,
 )
-from .list_gazettes_to_be_processed import get_gazettes_to_be_processed
+from .list_gazettes_to_be_processed import get_gazettes_to_be_processed, get_territories_gazettes
+from .diario_ama import extrair_diarios_municipais
+from .diario_municipal import Diario, Municipio
+from .get_territorie_info import get_territorie_info
