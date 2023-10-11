@@ -2,7 +2,7 @@ import json
 import re
 import unicodedata
 from datetime import date, datetime
-from .get_territorie_info import get_territorie_info
+from tasks import get_territorie_info
 import hashlib
 from io import BytesIO
 
