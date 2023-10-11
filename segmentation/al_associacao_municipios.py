@@ -41,7 +41,8 @@ def extrair_diarios_municipais(texto_diario: str, pdf_path: dict, territories: l
     nomes_municipios = re.findall(
         re_nomes_municipios, texto_diario, re.MULTILINE)
     for municipio in nomes_municipios:
-        municipio = Municipio(municipio)
+        nome_municipio_normalizado = normaliza_nome_municipio(municipio)
+        municipio = Municipio(nome_municipio_normalizado)
         texto_diarios[municipio] = ama_header + '\n\n'
 
     num_linha = 0
@@ -52,7 +53,8 @@ def extrair_diarios_municipais(texto_diario: str, pdf_path: dict, territories: l
         if linha.startswith("ESTADO DE ALAGOAS"):
             nome = nome_municipio(texto_diario_slice, num_linha)
             if nome is not None:
-                municipio_atual = Municipio(nome)
+                nome_normalizado = normaliza_nome_municipio(nome)
+                municipio_atual = Municipio(nome_normalizado)
 
         # Só começa, quando algum muncípio for encontrado.
         if municipio_atual is None:
@@ -69,6 +71,11 @@ def extrair_diarios_municipais(texto_diario: str, pdf_path: dict, territories: l
 
     return diarios
 
+def normaliza_nome_municipio(municipio: str) -> str:
+    municipio = municipio.rstrip().replace('\n', '')  # limpeza inicial
+    # Alguns nomes de municípios possuem um /AL no final, exemplo: Viçosa no diário 2022-01-17, ato 8496EC0A. Para evitar erros como "vicosa-/al-secretaria-municipal...", a linha seguir remove isso. 
+    municipio = re.sub("(\/AL.*|GABINETE DO PREFEITO.*|PODER.*|http.*|PORTARIA.*|Extrato.*|ATA DE.*|SECRETARIA.*|Fundo.*|SETOR.*|ERRATA.*|- AL.*|GABINETE.*)", "", municipio)
+    return municipio
 
 def nome_municipio(texto_diario_slice: slice, num_linha: int):
     texto = '\n'.join(texto_diario_slice[num_linha:num_linha+10])
