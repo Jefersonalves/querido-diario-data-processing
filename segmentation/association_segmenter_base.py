@@ -1,27 +1,25 @@
 class AssociationSegmenter:
-    def __init__(self, pdf_path: str, association_source_text: str):
-        self.pdf_path = pdf_path
+    def __init__(self, association_source_text: str):
         self.association_source_text = association_source_text
 
     def get_gazette_segments(self):
         """
-        Receives a source_text of a association
-        and returns a list of GazetteSegment
+        Returns a list of GazetteSegment
         """
-        city_segments = self.segment_by_city(self.association_source_text)
-        gazette_segments = self.extract_gazette_segment_metadata(city_segments)
+        city_to_text_split = self.split_text_by_city(self.association_source_text)
+        gazette_segments = self.create_gazette_segments(city_to_text_split)
         return gazette_segments
 
-    def segment_by_city(self, association_source_text):
+    def split_text_by_city(self):
         """
-        Segment a source_text of a association by city
+        Segment a association text by city
         and returns a list of text segments
         """
         raise NotImplementedError
-    
-    def extract_gazette_segment_metadata(self, city_segment_text):
+
+    def create_gazette_segments(self, text_split):
         """
-        Receives a text segment of a city
-        and returns a dict with the gazette metadata
+        Receives a text split of a association
+        and returns a list of GazetteSegment
         """
         raise NotImplementedError

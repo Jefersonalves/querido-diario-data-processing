@@ -27,8 +27,7 @@ class Municipio:
         return json.dumps(self.__dict__, indent=2, default=str, ensure_ascii=False)
 
 
-class Diario:
-
+class GazetteSegment:
     _mapa_meses = {
         "Janeiro": 1,
         "Fevereiro": 2,
@@ -44,23 +43,28 @@ class Diario:
         "Dezembro": 12,
     }
 
-    def __init__(self, municipio: Municipio, cabecalho: str, texto: str):
-        self.territory_name = municipio.nome
+    def __init__(self, municipio: str, texto: str):
+        self.territory_name = municipio
         self.source_text = texto.rstrip()
-        self.date = self._extrai_data_publicacao(cabecalho)
-        self.edition_number = cabecalho.split("Nº")[1].strip()
+        self.date = self._get_publication_date(texto)
+        self.edition_number = self._get_edition_number(texto)
         self.is_extra_edition = False
         self.power = "executive_legislative"
         self.file_checksum = self.md5sum(BytesIO(self.source_text.encode(encoding='UTF-8')))
         self.scraped_at = datetime.utcnow()
         self.created_at = self.scraped_at
-        # file_endpoint = gazette_text_extraction.get_file_endpoint()
         self.processed = True
 
-    def _extrai_data_publicacao(self, ama_header: str):
+    def _get_edition_number(self, texto: str) -> str:
+        match = re.search(r"Nº (\d+)", texto)
+        if match:
+            return match.group(1)
+        return None
+
+    def _get_publication_date(self, texto: str):
         match = re.findall(
-            r".*(\d{2}) de (\w*) de (\d{4})", ama_header, re.MULTILINE)[0]
-        mes = Diario._mapa_meses[match[1]]
+            r".*(\d{2}) de (\w*) de (\d{4})", texto, re.MULTILINE)[0]
+        mes = GazetteSegment._mapa_meses[match[1]]
         return date(year=int(match[2]), month=mes, day=int(match[0]))
 
     def md5sum(self, file):
