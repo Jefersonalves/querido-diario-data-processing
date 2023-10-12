@@ -2,8 +2,7 @@ import re
 
 from .diario_municipal import Diario, Municipio
 
-
-class ALAssociacaoMunicipiosSegmenter:
+class ALAssociacaoMunicipiosSegmenter():
     def __init__(self):
         # No final do regex, existe uma estrutura condicional que verifica se o próximo match é um \s ou SECRETARIA. Isso foi feito para resolver um problema no diário de 2018-10-02, em que o município de Coité do Nóia não foi percebido pelo código. Para resolver isso, utilizamos a próxima palavra (SECRETARIA) para tratar esse caso.
         # Exceções Notáveis
