@@ -11,7 +11,7 @@ class ALAssociacaoMunicipiosSegmenter:
         self.RE_NOMES_MUNICIPIOS = (
             r"ESTADO DE ALAGOAS(?:| )\n{1,2}PREFEITURA MUNICIPAL DE (.*\n{0,2}(?!VAMOS).*$)\n\s(?:\s|SECRETARIA)")
 
-    def extrair_diarios_municipais(self, texto_diario: str, pdf_path: dict, territories: list):
+    def extrair_diarios_municipais(self, texto_diario: str):
         texto_diario_slice = texto_diario.lstrip().splitlines()
 
         # Processamento
@@ -69,7 +69,7 @@ class ALAssociacaoMunicipiosSegmenter:
 
         diarios = []
         for municipio, diario in texto_diarios.items():
-            diarios.append(Diario(municipio, ama_header, diario, pdf_path, territories).__dict__)
+            diarios.append(Diario(municipio, ama_header, diario).__dict__)
 
         return diarios
 

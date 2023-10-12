@@ -2,7 +2,6 @@ import json
 import re
 import unicodedata
 from datetime import date, datetime
-from tasks import get_territorie_info
 import hashlib
 from io import BytesIO
 
@@ -45,27 +44,18 @@ class Diario:
         "Dezembro": 12,
     }
 
-    def __init__(self, municipio: Municipio, cabecalho: str, texto: str, pdf_path: dict, territories: list):
-
-        self.territory_id, self.territory_name, self.state_code = get_territorie_info(
-            name=municipio.nome,
-            state=cabecalho.split(",")[0],
-            territories=territories)
-
+    def __init__(self, municipio: Municipio, cabecalho: str, texto: str):
+        self.territory_name = municipio.nome
         self.source_text = texto.rstrip()
         self.date = self._extrai_data_publicacao(cabecalho)
         self.edition_number = cabecalho.split("Nº")[1].strip()
         self.is_extra_edition = False
         self.power = "executive_legislative"
-        self.file_url = pdf_path["file_url"]
-        self.file_path = pdf_path["file_path"]
         self.file_checksum = self.md5sum(BytesIO(self.source_text.encode(encoding='UTF-8')))
         self.scraped_at = datetime.utcnow()
         self.created_at = self.scraped_at
         # file_endpoint = gazette_text_extraction.get_file_endpoint()
-        self.file_raw_txt = f"/{self.territory_id}/{self.date}/{self.file_checksum}.txt"
         self.processed = True
-        self.url = self.file_raw_txt
 
     def _extrai_data_publicacao(self, ama_header: str):
         match = re.findall(
