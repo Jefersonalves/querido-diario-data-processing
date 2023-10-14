@@ -1,7 +1,62 @@
 import re
+import datetime
 
-from .city_gazette_segment_base import CityGazetteSegment, ALAssociacaoMunicipiosExtractor
+from .city_gazette_segment_base import CityGazetteSegment, GazetteSegmentExtractor
 from .association_segmenter_base import AssociationSegmenter
+
+
+class ALAssociacaoMunicipiosExtractor(GazetteSegmentExtractor):
+    _mapa_meses = {
+        "Janeiro": 1,
+        "Fevereiro": 2,
+        "Março": 3,
+        "Abril": 4,
+        "Maio": 5,
+        "Junho": 6,
+        "Julho": 7,
+        "Agosto": 8,
+        "Setembro": 9,
+        "Outubro": 10,
+        "Novembro": 11,
+        "Dezembro": 12,
+    }
+
+    def get_city_segment(self, city: str, city_text: str):
+        territory_name = city
+        source_text = city_text.rstrip()
+        date = self._get_publication_date(city_text)
+        edition_number = self._get_edition_number(city_text)
+        is_extra_edition = False
+        power = "executive_legislative"
+        file_checksum = self.get_checksum(self.source_text)
+        utc_now = datetime.datetime.utcnow()
+        processed = True
+        
+        return CityGazetteSegment(
+            territory_name=territory_name,
+            source_text=source_text,
+            date=date,
+            edition_number=edition_number,
+            is_extra_edition=is_extra_edition,
+            power=power,
+            file_checksum=file_checksum,
+            scraped_at=utc_now,
+            created_at=utc_now,
+            processed=processed,
+        )
+
+    def _get_edition_number(self, texto: str) -> str:
+        match = re.search(r"Nº (\d+)", texto)
+        if match:
+            return match.group(1)
+        return None
+
+    def _get_publication_date(self, texto: str):
+        match = re.findall(
+            r".*(\d{2}) de (\w*) de (\d{4})", texto, re.MULTILINE)[0]
+        mes = self._mapa_meses[match[1]]
+        return datetime.date(year=int(match[2]), month=mes, day=int(match[0]))
+
 
 class ALAssociacaoMunicipiosSegmenter(AssociationSegmenter):
     def __init__(self, association_source_text):
