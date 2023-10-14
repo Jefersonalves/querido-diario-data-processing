@@ -1,30 +1,7 @@
-import json
-import unicodedata
 from datetime import date, datetime
 import hashlib
 from io import BytesIO
 from dataclasses import dataclass
-
-
-class Municipio:
-    def __init__(self, municipio):
-        self.id = self._computa_id(municipio)
-        self.nome = municipio
-
-    def _computa_id(self, nome_municipio):
-        ret = nome_municipio.strip().lower().replace(" ", "-")
-        ret = unicodedata.normalize('NFKD', ret)
-        ret = ret.encode('ASCII', 'ignore').decode("utf-8")
-        return ret
-
-    def __hash__(self):
-        return hash(self.id)
-
-    def __eq__(self, other):
-        return self.id == other.id
-
-    def __str__(self):
-        return json.dumps(self.__dict__, indent=2, default=str, ensure_ascii=False)
 
 
 @dataclass
