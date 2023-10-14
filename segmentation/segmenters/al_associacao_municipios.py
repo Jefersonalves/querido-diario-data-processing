@@ -1,34 +1,37 @@
 import re
 import datetime
 
-from .territory_gazette_segment_base import TerritoryGazetteSegment, GazetteSegmentExtractor
-from .association_segmenter_base import AssociationSegmenter
+from segmentation import TerritoryGazetteSegment, GazetteSegmentExtractor
+from segmentation import AssociationSegmenter
 
 
 class ALAssociacaoMunicipiosExtractor(GazetteSegmentExtractor):
-    _mapa_meses = {
-        "Janeiro": 1,
-        "Fevereiro": 2,
-        "Março": 3,
-        "Abril": 4,
-        "Maio": 5,
-        "Junho": 6,
-        "Julho": 7,
-        "Agosto": 8,
-        "Setembro": 9,
-        "Outubro": 10,
-        "Novembro": 11,
-        "Dezembro": 12,
-    }
+    def __init__(self, territory, source_text):
+        super().__init__(territory, source_text)
 
-    def get_territory_segment(self, territory: str, territory_text: str):
-        territory_name = territory
-        source_text = territory_text.rstrip()
-        date = self._get_publication_date(territory_text)
-        edition_number = self._get_edition_number(territory_text)
+        self._mapa_meses = {
+            "Janeiro": 1,
+            "Fevereiro": 2,
+            "Março": 3,
+            "Abril": 4,
+            "Maio": 5,
+            "Junho": 6,
+            "Julho": 7,
+            "Agosto": 8,
+            "Setembro": 9,
+            "Outubro": 10,
+            "Novembro": 11,
+            "Dezembro": 12,
+        }
+
+    def get_territory_segment(self):
+        territory_name = self.territory
+        source_text = self.source_text.rstrip()
+        date = self._get_publication_date(self.source_text)
+        edition_number = self._get_edition_number(self.source_text)
         is_extra_edition = False
         power = "executive_legislative"
-        file_checksum = self.get_checksum(self.source_text)
+        file_checksum = self.get_checksum()
         utc_now = datetime.datetime.utcnow()
         processed = True
         
@@ -72,7 +75,7 @@ class ALAssociacaoMunicipiosSegmenter(AssociationSegmenter):
         """
         Returns a list of GazetteSegment
         """
-        territory_to_text_split = self.split_text_by_territory(self.association_source_text)
+        territory_to_text_split = self.split_text_by_territory()
         gazette_segments = self.create_gazette_segments(territory_to_text_split)
         return gazette_segments
 
