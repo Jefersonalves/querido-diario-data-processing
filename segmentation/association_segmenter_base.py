@@ -6,13 +6,13 @@ class AssociationSegmenter:
         """
         Returns a list of GazetteSegment
         """
-        city_to_text_split = self.split_text_by_city(self.association_source_text)
-        gazette_segments = self.create_gazette_segments(city_to_text_split)
+        territory_to_text_split = self.split_text_by_territory(self.association_source_text)
+        gazette_segments = self.create_gazette_segments(territory_to_text_split)
         return gazette_segments
 
-    def split_text_by_city(self):
+    def split_text_by_territory(self):
         """
-        Segment a association text by city
+        Segment a association text by territory
         and returns a list of text segments
         """
         raise NotImplementedError

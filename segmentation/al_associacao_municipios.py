@@ -17,14 +17,14 @@ class ALAssociacaoMunicipiosSegmenter(AssociationSegmenter):
         """
         Returns a list of GazetteSegment
         """
-        city_to_text_split = self.split_text_by_city(self.association_source_text)
-        gazette_segments = self.create_gazette_segments(city_to_text_split)
+        territory_to_text_split = self.split_text_by_territory(self.association_source_text)
+        gazette_segments = self.create_gazette_segments(territory_to_text_split)
         return gazette_segments
 
-    def split_text_by_city(self) -> dict[str, str]:
+    def split_text_by_territory(self) -> dict[str, str]:
         """
-        Segment a association text by city
-        and returns a dict with the city name and the text segment
+        Segment a association text by territory
+        and returns a dict with the territory name and the text segment
         """
         texto_diario_slice = self.association_source_text.lstrip().splitlines()
 
@@ -53,12 +53,12 @@ class ALAssociacaoMunicipiosSegmenter(AssociationSegmenter):
             texto_diario_slice) if n not in linhas_apagar]
 
         # Inserindo o cabeçalho no diário de cada município.
-        city_to_text_split = {}
+        territory_to_text_split = {}
         nomes_municipios = re.findall(
             self.RE_NOMES_MUNICIPIOS, self.association_source_text, re.MULTILINE)
         for municipio in nomes_municipios:
-            nome_municipio_normalizado = self._normalize_city_name(municipio)
-            city_to_text_split[nome_municipio_normalizado] = ama_header + '\n\n'
+            nome_municipio_normalizado = self._normalize_territory_name(municipio)
+            territory_to_text_split[nome_municipio_normalizado] = ama_header + '\n\n'
 
         num_linha = 0
         municipio_atual = None
@@ -66,9 +66,9 @@ class ALAssociacaoMunicipiosSegmenter(AssociationSegmenter):
             linha = texto_diario_slice[num_linha].rstrip()
 
             if linha.startswith("ESTADO DE ALAGOAS"):
-                nome = self._extract_city_name(texto_diario_slice, num_linha)
+                nome = self._extract_territory_name(texto_diario_slice, num_linha)
                 if nome is not None:
-                    nome_normalizado = self._normalize_city_name(nome)
+                    nome_normalizado = self._normalize_territory_name(nome)
                     municipio_atual = nome_normalizado
 
             # Só começa, quando algum muncípio for encontrado.
@@ -77,14 +77,14 @@ class ALAssociacaoMunicipiosSegmenter(AssociationSegmenter):
                 continue
 
             # Conteúdo faz parte de um muncípio
-            city_to_text_split[municipio_atual] += linha + '\n'
+            territory_to_text_split[municipio_atual] += linha + '\n'
             num_linha += 1
 
-        return city_to_text_split
+        return territory_to_text_split
 
     def create_gazette_segments(self, text_split: dict[str, str]) -> list[dict]:
         """
-        Receives a text split of a city
+        Receives a text split of a territory
         and returns a list of dicts with the gazettes metadata
         """
         segmentos_diarios = []
@@ -92,13 +92,13 @@ class ALAssociacaoMunicipiosSegmenter(AssociationSegmenter):
             segmentos_diarios.append(GazetteSegment(municipio, diario).__dict__)
         return segmentos_diarios
 
-    def _normalize_city_name(self, municipio: str) -> str:
+    def _normalize_territory_name(self, municipio: str) -> str:
         municipio = municipio.rstrip().replace('\n', '')  # limpeza inicial
         # Alguns nomes de municípios possuem um /AL no final, exemplo: Viçosa no diário 2022-01-17, ato 8496EC0A. Para evitar erros como "vicosa-/al-secretaria-municipal...", a linha seguir remove isso. 
         municipio = re.sub("(\/AL.*|GABINETE DO PREFEITO.*|PODER.*|http.*|PORTARIA.*|Extrato.*|ATA DE.*|SECRETARIA.*|Fundo.*|SETOR.*|ERRATA.*|- AL.*|GABINETE.*)", "", municipio)
         return municipio
 
-    def _extract_city_name(self, texto_diario_slice: list[str], num_linha: int):
+    def _extract_territory_name(self, texto_diario_slice: list[str], num_linha: int):
         texto = '\n'.join(texto_diario_slice[num_linha:num_linha+10])
         match = re.findall(self.RE_NOMES_MUNICIPIOS, texto, re.MULTILINE)
         if len(match) > 0:
