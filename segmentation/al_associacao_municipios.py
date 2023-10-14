@@ -1,7 +1,7 @@
 import re
 import datetime
 
-from .city_gazette_segment_base import CityGazetteSegment, GazetteSegmentExtractor
+from .territory_gazette_segment_base import TerritoryGazetteSegment, GazetteSegmentExtractor
 from .association_segmenter_base import AssociationSegmenter
 
 
@@ -21,18 +21,18 @@ class ALAssociacaoMunicipiosExtractor(GazetteSegmentExtractor):
         "Dezembro": 12,
     }
 
-    def get_city_segment(self, city: str, city_text: str):
-        territory_name = city
-        source_text = city_text.rstrip()
-        date = self._get_publication_date(city_text)
-        edition_number = self._get_edition_number(city_text)
+    def get_territory_segment(self, territory: str, territory_text: str):
+        territory_name = territory
+        source_text = territory_text.rstrip()
+        date = self._get_publication_date(territory_text)
+        edition_number = self._get_edition_number(territory_text)
         is_extra_edition = False
         power = "executive_legislative"
         file_checksum = self.get_checksum(self.source_text)
         utc_now = datetime.datetime.utcnow()
         processed = True
         
-        return CityGazetteSegment(
+        return TerritoryGazetteSegment(
             territory_name=territory_name,
             source_text=source_text,
             date=date,
@@ -68,7 +68,7 @@ class ALAssociacaoMunicipiosSegmenter(AssociationSegmenter):
             r"ESTADO DE ALAGOAS(?:| )\n{1,2}PREFEITURA MUNICIPAL DE (.*\n{0,2}(?!VAMOS).*$)\n\s(?:\s|SECRETARIA)"
         )
 
-    def get_gazette_segments(self) -> list[CityGazetteSegment]:
+    def get_gazette_segments(self) -> list[TerritoryGazetteSegment]:
         """
         Returns a list of GazetteSegment
         """
@@ -144,7 +144,7 @@ class ALAssociacaoMunicipiosSegmenter(AssociationSegmenter):
         """
         segmentos_diarios = []
         for municipio, diario in text_split.items():
-            segmentos_diarios.append(ALAssociacaoMunicipiosExtractor(municipio, diario).get_city_segment().__dict__)
+            segmentos_diarios.append(ALAssociacaoMunicipiosExtractor(municipio, diario).get_territory_segment().__dict__)
         return segmentos_diarios
 
     def _normalize_territory_name(self, municipio: str) -> str:

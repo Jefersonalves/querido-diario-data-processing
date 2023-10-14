@@ -28,7 +28,7 @@ class Municipio:
 
 
 @dataclass
-class CityGazetteSegment:
+class TerritoryGazetteSegment:
     """
     Dataclass to represent a gazette segment of a association
     related to a city
@@ -47,12 +47,12 @@ class CityGazetteSegment:
 
 class GazetteSegmentExtractor:
     """
-    Given a gazette text from a city, returns a CityGazetteSegment object
+    Given a gazette text from a territory, returns a TerritoryGazetteSegment object
     """
-    def __init__(self, city_text):
-        self.source_text = city_text
+    def __init__(self, territory_text):
+        self.source_text = territory_text
     
-    def get_city_segment(self, city: str, city_text: str) -> CityGazetteSegment:
+    def get_territory_segment(self, territory: str, territory_text: str) -> TerritoryGazetteSegment:
         raise NotImplementedError
     
     def get_checksum(self, source_text):
