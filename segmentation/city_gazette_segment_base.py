@@ -4,6 +4,7 @@ import unicodedata
 from datetime import date, datetime
 import hashlib
 from io import BytesIO
+from dataclasses import dataclass
 
 
 class Municipio:
@@ -27,7 +28,21 @@ class Municipio:
         return json.dumps(self.__dict__, indent=2, default=str, ensure_ascii=False)
 
 
-class GazetteSegment:
+@dataclass
+class CityGazetteSegment:
+    territory_name: str
+    source_text: str
+    date: date
+    edition_number: str
+    is_extra_edition: bool
+    power: str
+    file_checksum: str
+    scraped_at: datetime
+    created_at: datetime
+    processed: bool
+
+
+class ALAssociacaoMunicipiosExtractor:
     _mapa_meses = {
         "Janeiro": 1,
         "Fevereiro": 2,
@@ -43,17 +58,30 @@ class GazetteSegment:
         "Dezembro": 12,
     }
 
-    def __init__(self, municipio: str, texto: str):
-        self.territory_name = municipio
-        self.source_text = texto.rstrip()
-        self.date = self._get_publication_date(texto)
-        self.edition_number = self._get_edition_number(texto)
-        self.is_extra_edition = False
-        self.power = "executive_legislative"
-        self.file_checksum = self.md5sum(BytesIO(self.source_text.encode(encoding='UTF-8')))
-        self.scraped_at = datetime.utcnow()
-        self.created_at = self.scraped_at
-        self.processed = True
+    def get_city_segment(self, municipio: str, texto: str):
+        territory_name = municipio
+        source_text = texto.rstrip()
+        date = self._get_publication_date(texto)
+        edition_number = self._get_edition_number(texto)
+        is_extra_edition = False
+        power = "executive_legislative"
+        file_checksum = self.md5sum(BytesIO(self.source_text.encode(encoding='UTF-8')))
+        scraped_at = datetime.utcnow()
+        created_at = self.scraped_at
+        processed = True
+        
+        return CityGazetteSegment(
+            territory_name=territory_name,
+            source_text=source_text,
+            date=date,
+            edition_number=edition_number,
+            is_extra_edition=is_extra_edition,
+            power=power,
+            file_checksum=file_checksum,
+            scraped_at=scraped_at,
+            created_at=created_at,
+            processed=processed,
+        )
 
     def _get_edition_number(self, texto: str) -> str:
         match = re.search(r"Nº (\d+)", texto)
@@ -64,7 +92,7 @@ class GazetteSegment:
     def _get_publication_date(self, texto: str):
         match = re.findall(
             r".*(\d{2}) de (\w*) de (\d{4})", texto, re.MULTILINE)[0]
-        mes = GazetteSegment._mapa_meses[match[1]]
+        mes = self._mapa_meses[match[1]]
         return date(year=int(match[2]), month=mes, day=int(match[0]))
 
     def md5sum(self, file):

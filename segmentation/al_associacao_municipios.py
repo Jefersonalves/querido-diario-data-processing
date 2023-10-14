@@ -1,6 +1,6 @@
 import re
 
-from .diario_municipal import GazetteSegment
+from .city_gazette_segment_base import CityGazetteSegment, ALAssociacaoMunicipiosExtractor
 from .association_segmenter_base import AssociationSegmenter
 
 class ALAssociacaoMunicipiosSegmenter(AssociationSegmenter):
@@ -13,7 +13,7 @@ class ALAssociacaoMunicipiosSegmenter(AssociationSegmenter):
             r"ESTADO DE ALAGOAS(?:| )\n{1,2}PREFEITURA MUNICIPAL DE (.*\n{0,2}(?!VAMOS).*$)\n\s(?:\s|SECRETARIA)"
         )
 
-    def get_gazette_segments(self) -> list[GazetteSegment]:
+    def get_gazette_segments(self) -> list[CityGazetteSegment]:
         """
         Returns a list of GazetteSegment
         """
@@ -89,7 +89,7 @@ class ALAssociacaoMunicipiosSegmenter(AssociationSegmenter):
         """
         segmentos_diarios = []
         for municipio, diario in text_split.items():
-            segmentos_diarios.append(GazetteSegment(municipio, diario).__dict__)
+            segmentos_diarios.append(ALAssociacaoMunicipiosExtractor(municipio, diario).get_city_segment().__dict__)
         return segmentos_diarios
 
     def _normalize_territory_name(self, municipio: str) -> str:
