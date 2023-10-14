@@ -49,23 +49,25 @@ class GazetteSegmentExtractor:
     """
     Given a gazette text from a territory, returns a TerritoryGazetteSegment object
     """
-    def __init__(self, territory_text):
-        self.source_text = territory_text
+    def __init__(self, territory, source_text):
+        self.territory = territory
+        self.source_text = source_text
     
-    def get_territory_segment(self, territory: str, territory_text: str) -> TerritoryGazetteSegment:
+    def get_territory_segment(self) -> TerritoryGazetteSegment:
         raise NotImplementedError
     
-    def get_checksum(self, source_text):
+    def get_checksum(self):
         """Calculate the md5 checksum of text
         by creating a file-like object without reading its
         whole content in memory.
         
         Example
         -------
-        >>> get_checksum("A simple text")
+        >>> extractor = GazetteSegmentExtractor("cidade", "A simple text")
+        >>> extractor.get_checksum()
             'ef313f200597d0a1749533ba6aeb002e'
         """
-        file = BytesIO(source_text.encode(encoding='UTF-8'))
+        file = BytesIO(self.source_text.encode(encoding='UTF-8'))
 
         m = hashlib.md5()
         while True:
