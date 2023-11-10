@@ -1,4 +1,4 @@
-from segmentation.association_segmenter_base import AssociationSegmenter
+from segmentation.base import AssociationSegmenter
 from segmentation.segmenters import ALAssociacaoMunicipiosSegmenter
 
 def get_segmenter(association_name: str, association_source_text) -> AssociationSegmenter:
