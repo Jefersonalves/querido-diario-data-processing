@@ -1,7 +1,7 @@
 import re
 import datetime
 
-from segmentation import TerritoryGazetteSegment, GazetteSegmentExtractor
+from segmentation import GazetteSegment, GazetteSegmentExtractor
 from segmentation import AssociationSegmenter
 
 
@@ -35,7 +35,7 @@ class ALAssociacaoMunicipiosExtractor(GazetteSegmentExtractor):
         utc_now = datetime.datetime.utcnow()
         processed = True
         
-        return TerritoryGazetteSegment(
+        return GazetteSegment(
             territory_name=territory_name,
             source_text=source_text,
             date=date,
@@ -71,7 +71,7 @@ class ALAssociacaoMunicipiosSegmenter(AssociationSegmenter):
             r"ESTADO DE ALAGOAS(?:| )\n{1,2}PREFEITURA MUNICIPAL DE (.*\n{0,2}(?!VAMOS).*$)\n\s(?:\s|SECRETARIA)"
         )
 
-    def get_gazette_segments(self) -> list[TerritoryGazetteSegment]:
+    def get_gazette_segments(self) -> list[GazetteSegment]:
         """
         Returns a list of GazetteSegment
         """

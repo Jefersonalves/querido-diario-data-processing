@@ -5,7 +5,7 @@ from dataclasses import dataclass
 
 
 @dataclass
-class TerritoryGazetteSegment:
+class GazetteSegment:
     """
     Dataclass to represent a gazette segment of a association
     related to a city
@@ -24,13 +24,13 @@ class TerritoryGazetteSegment:
 
 class GazetteSegmentExtractor:
     """
-    Given a gazette text from a territory, returns a TerritoryGazetteSegment object
+    Given a gazette text from a territory, returns a GazetteSegment object
     """
     def __init__(self, territory, source_text):
         self.territory = territory
         self.source_text = source_text
     
-    def get_territory_segment(self) -> TerritoryGazetteSegment:
+    def get_territory_segment(self) -> GazetteSegment:
         raise NotImplementedError
     
     def get_checksum(self):
