@@ -7,7 +7,7 @@ def get_segmenter(association_name: str, association_source_text) -> Association
 
     Example
     -------
-    >>> from segmentation.segmenter_factory import get_segmenter
+    >>> from segmentation import get_segmenter
     >>> segmenter = get_segmenter("al_associacao_municipios", association_source_text)
     >>> segmenter.get_gazette_segments()
 

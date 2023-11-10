@@ -1,8 +1,11 @@
 import re
 import datetime
 
-from segmentation import GazetteSegment, GazetteSegmentExtractor
-from segmentation import AssociationSegmenter
+from segmentation.base import (
+    AssociationSegmenter,
+    GazetteSegment,
+    GazetteSegmentExtractor
+)
 
 
 class ALAssociacaoMunicipiosExtractor(GazetteSegmentExtractor):
