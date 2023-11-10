@@ -1,11 +1,12 @@
 import re
 
+from typing import Any
 from segmentation.base import AssociationSegmenter, GazetteSegment
 
 
 class ALAssociacaoMunicipiosSegmenter(AssociationSegmenter):
-    def __init__(self, association_source_text):
-        super().__init__(association_source_text)
+    def __init__(self, association_gazzete: dict[str, Any]):
+        super().__init__(association_gazzete)
         # No final do regex, existe uma estrutura condicional que verifica se o próximo match é um \s ou SECRETARIA. Isso foi feito para resolver um problema no diário de 2018-10-02, em que o município de Coité do Nóia não foi percebido pelo código. Para resolver isso, utilizamos a próxima palavra (SECRETARIA) para tratar esse caso.
         # Exceções Notáveis
         # String: VAMOS, município Poço das Trincheiras, 06/01/2022, ato CCB3A6AB
@@ -94,37 +95,62 @@ class ALAssociacaoMunicipiosSegmenter(AssociationSegmenter):
         return segmentos_diarios
 
     def get_segment(self, territory, segment_text) -> GazetteSegment:
-        # territory_id
-        # teritory_name
-        # state_code
+        # self.association_gazette contains:
+        # [x] 'created_at'
+        # [x] 'date'
+        # [x] 'edition_number'
+        # [ ] 'file_checksum'
+        # [x] 'file_path'
+        # [x] 'file_url'
+        # [ ] 'id'
+        # [x] 'is_extra_edition'
+        # [x] 'power'
+        # [ ] 'processed'
+        # [x] 'scraped_at'
+        # [ ] 'source_text'
+        # [ ] 'state_code'
+        # [ ] 'territory_id'
+        # [ ] 'territory_name'
+        # [ ] 'url'
 
-        # file_url = pdf_path["file_url"]
-        # file_path = pdf_path["file_path"]
+        # same as self.association_gazette
+        created_at = self.association_gazette["created_at"]
+        date = self.association_gazette["date"]
+        edition_number = self.association_gazette["edition_number"]
+        file_path = self.association_gazette["file_path"]
+        file_url = self.association_gazette["file_url"]
+        is_extra_edition = self.association_gazette["is_extra_edition"]
+        power = self.association_gazette["power"]
+        scraped_at = self.association_gazette["scraped_at"]
+        state_code = self.association_gazette["state_code"]
 
-        # file_raw_txt = f"/{self.territory_id}/{self.date}/{self.file_checksum}.txt"
-        # url = file_raw_txt
-    
+        # from segment
+        file_checksum = self.get_checksum(segment_text)
+        id = id
+        processed = True
+        territory_id = territory_id
         territory_name = territory
         source_text = segment_text.rstrip()
-        # date = self._get_publication_date(self.source_text)
-        # edition_number = self._get_edition_number(self.source_text)
-        # is_extra_edition = False
-        # power = "executive_legislative"
-        file_checksum = self.get_checksum(segment_text)
-        # utc_now = datetime.datetime.utcnow()
-        processed = True
+        file_raw_txt = f"/{territory_id}/{date}/{file_checksum}.txt"
+        url = file_raw_txt
         
         return GazetteSegment(
-            territory_name=territory_name,
-            source_text=source_text,
-            # date=date,
-            # edition_number=edition_number,
-            # is_extra_edition=is_extra_edition,
-            # power=power,
+            created_at=created_at,
+            date=date,
+            edition_number=edition_number,
             file_checksum=file_checksum,
-            # scraped_at=utc_now,
-            # created_at=utc_now,
+            file_path=file_path,
+            file_url=file_url,
+            id=id,
+            is_extra_edition=is_extra_edition,
+            power=power,
             processed=processed,
+            scraped_at=scraped_at,
+            source_text=source_text,
+            state_code=state_code,
+            territory_id=territory_id,
+            territory_name=territory_name,
+            url=url,
         )
 
     def _normalize_territory_name(self, municipio: str) -> str:

@@ -2,8 +2,9 @@ import hashlib
 from io import BytesIO
 
 class AssociationSegmenter:
-    def __init__(self, association_source_text: str):
-        self.association_source_text = association_source_text
+    def __init__(self, association_gazette: str):
+        self.association_gazette = association_gazette
+        self.association_source_text = self.association_gazette["source_text"]
 
     def get_gazette_segments(self):
         """

@@ -18,3 +18,9 @@ class GazetteSegment:
     scraped_at: datetime
     created_at: datetime
     processed: bool
+    file_path: str
+    file_url: str
+    id: str
+    state_code: str
+    territory_id: str
+    url: str
