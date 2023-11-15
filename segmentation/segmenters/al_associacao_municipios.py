@@ -13,13 +13,14 @@ class ALAssociacaoMunicipiosSegmenter(AssociationSegmenter):
         self.RE_NOMES_MUNICIPIOS = (
             r"ESTADO DE ALAGOAS(?:| )\n{1,2}PREFEITURA MUNICIPAL DE (.*\n{0,2}(?!VAMOS).*$)\n\s(?:\s|SECRETARIA)"
         )
+        self.association_source_text = self.association_gazette["source_text"]
 
     def get_gazette_segments(self) -> list[GazetteSegment]:
         """
         Returns a list of GazetteSegment
         """
         territory_to_text_split = self.split_text_by_territory()
-        gazette_segments = self.create_gazette_segments(territory_to_text_split)
+        gazette_segments = self._create_gazette_segments(territory_to_text_split)
         return gazette_segments
 
     def split_text_by_territory(self) -> dict[str, str]:
@@ -83,36 +84,18 @@ class ALAssociacaoMunicipiosSegmenter(AssociationSegmenter):
 
         return territory_to_text_split
 
-    def create_gazette_segments(self, text_split: dict[str, str]) -> list[dict]:
+    def _create_gazette_segments(self, text_split: dict[str, str]) -> list[dict]:
         """
         Receives a text split of a territory
         and returns a list of dicts with the gazettes metadata
         """
         segmentos_diarios = []
         for municipio, texto_diario in text_split.items():
-            segmento = self.get_segment(municipio, texto_diario)
+            segmento = self.build_segment(municipio, texto_diario)
             segmentos_diarios.append(segmento.__dict__)
         return segmentos_diarios
 
-    def get_segment(self, territory, segment_text) -> GazetteSegment:
-        # self.association_gazette contains:
-        # [x] 'created_at'
-        # [x] 'date'
-        # [x] 'edition_number'
-        # [ ] 'file_checksum'
-        # [x] 'file_path'
-        # [x] 'file_url'
-        # [ ] 'id'
-        # [x] 'is_extra_edition'
-        # [x] 'power'
-        # [ ] 'processed'
-        # [x] 'scraped_at'
-        # [ ] 'source_text'
-        # [ ] 'state_code'
-        # [ ] 'territory_id'
-        # [ ] 'territory_name'
-        # [ ] 'url'
-
+    def build_segment(self, territory, segment_text) -> GazetteSegment:
         # same as self.association_gazette
         created_at = self.association_gazette["created_at"]
         date = self.association_gazette["date"]
@@ -126,13 +109,13 @@ class ALAssociacaoMunicipiosSegmenter(AssociationSegmenter):
 
         # from segment
         file_checksum = self.get_checksum(segment_text)
-        id = id
+        # id = id
         processed = True
-        territory_id = territory_id
+        # territory_id = territory_id
         territory_name = territory
         source_text = segment_text.rstrip()
-        file_raw_txt = f"/{territory_id}/{date}/{file_checksum}.txt"
-        url = file_raw_txt
+        # file_raw_txt = f"/{territory_id}/{date}/{file_checksum}.txt"
+        # url = file_raw_txt
         
         return GazetteSegment(
             created_at=created_at,
@@ -141,16 +124,19 @@ class ALAssociacaoMunicipiosSegmenter(AssociationSegmenter):
             file_checksum=file_checksum,
             file_path=file_path,
             file_url=file_url,
-            id=id,
             is_extra_edition=is_extra_edition,
             power=power,
             processed=processed,
             scraped_at=scraped_at,
             source_text=source_text,
             state_code=state_code,
-            territory_id=territory_id,
             territory_name=territory_name,
-            url=url,
+            # id=id,
+            # territory_id=territory_id,
+            # url=url,
+            id=None,
+            territory_id=None,
+            url=None,
         )
 
     def _normalize_territory_name(self, municipio: str) -> str:
