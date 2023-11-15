@@ -97,15 +97,15 @@ class ALAssociacaoMunicipiosSegmenter(AssociationSegmenter):
 
     def build_segment(self, territory, segment_text) -> GazetteSegment:
         # same as self.association_gazette
-        created_at = self.association_gazette["created_at"]
-        date = self.association_gazette["date"]
-        edition_number = self.association_gazette["edition_number"]
-        file_path = self.association_gazette["file_path"]
-        file_url = self.association_gazette["file_url"]
-        is_extra_edition = self.association_gazette["is_extra_edition"]
-        power = self.association_gazette["power"]
-        scraped_at = self.association_gazette["scraped_at"]
-        state_code = self.association_gazette["state_code"]
+        created_at = self.association_gazette.get("created_at")
+        date = self.association_gazette.get("date")
+        edition_number = self.association_gazette.get("edition_number")
+        file_path = self.association_gazette.get("file_path")
+        file_url = self.association_gazette.get("file_url")
+        is_extra_edition = self.association_gazette.get("is_extra_edition")
+        power = self.association_gazette.get("power")
+        scraped_at = self.association_gazette.get("scraped_at")
+        state_code = self.association_gazette.get("state_code")
 
         # from segment
         file_checksum = self.get_checksum(segment_text)
