@@ -20,7 +20,7 @@ class GazetteSegment:
     processed: bool
     file_path: str
     file_url: str
-    id: str
     state_code: str
     territory_id: str
+    file_raw_txt: str
     url: str

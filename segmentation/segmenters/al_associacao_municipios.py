@@ -96,47 +96,38 @@ class ALAssociacaoMunicipiosSegmenter(AssociationSegmenter):
         return segmentos_diarios
 
     def build_segment(self, territory, segment_text) -> GazetteSegment:
-        # same as self.association_gazette
-        created_at = self.association_gazette.get("created_at")
-        date = self.association_gazette.get("date")
-        edition_number = self.association_gazette.get("edition_number")
-        file_path = self.association_gazette.get("file_path")
-        file_url = self.association_gazette.get("file_url")
-        is_extra_edition = self.association_gazette.get("is_extra_edition")
-        power = self.association_gazette.get("power")
-        scraped_at = self.association_gazette.get("scraped_at")
-        state_code = self.association_gazette.get("state_code")
-
-        # from segment
         file_checksum = self.get_checksum(segment_text)
-        # id = id
         processed = True
-        # territory_id = territory_id
         territory_name = territory
         source_text = segment_text.rstrip()
+        
+        # TODO: get territory data and replace the None values
+        territory_id = None
         # file_raw_txt = f"/{territory_id}/{date}/{file_checksum}.txt"
+        file_raw_txt = None
         # url = file_raw_txt
+        url = None
         
         return GazetteSegment(
-            created_at=created_at,
-            date=date,
-            edition_number=edition_number,
+            # same association values
+            created_at=self.association_gazette.get("created_at"),
+            date=self.association_gazette.get("date"),
+            edition_number=self.association_gazette.get("edition_number"),
+            file_path=self.association_gazette.get("file_path"),
+            file_url=self.association_gazette.get("file_url"),
+            is_extra_edition=self.association_gazette.get("is_extra_edition"),
+            power=self.association_gazette.get("power"),
+            scraped_at=self.association_gazette.get("scraped_at"),
+            state_code=self.association_gazette.get("state_code"),
+
+            # segment specific values
             file_checksum=file_checksum,
-            file_path=file_path,
-            file_url=file_url,
-            is_extra_edition=is_extra_edition,
-            power=power,
             processed=processed,
-            scraped_at=scraped_at,
-            source_text=source_text,
-            state_code=state_code,
             territory_name=territory_name,
-            # id=id,
-            # territory_id=territory_id,
-            # url=url,
-            id=None,
-            territory_id=None,
-            url=None,
+            source_text=source_text,
+            territory_id=territory_id,
+            file_raw_txt=file_raw_txt,
+            url=url,
         )
 
     def _normalize_territory_name(self, municipio: str) -> str:
