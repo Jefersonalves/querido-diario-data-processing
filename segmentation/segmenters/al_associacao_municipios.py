@@ -15,12 +15,15 @@ class ALAssociacaoMunicipiosSegmenter(AssociationSegmenter):
         )
         self.association_source_text = self.association_gazette["source_text"]
 
-    def get_gazette_segments(self) -> list[GazetteSegment]:
+    def get_gazette_segments(self) -> list[dict[str, Any]]:
         """
-        Returns a list of GazetteSegment
+        Returns a list of dicts with the gazettes metadata
         """
         territory_to_text_split = self.split_text_by_territory()
-        gazette_segments = self._create_gazette_segments(territory_to_text_split)
+        gazette_segments = []
+        for municipio, texto_diario in territory_to_text_split.items():
+            segmento = self.build_segment(municipio, texto_diario)
+            gazette_segments.append(segmento.__dict__)
         return gazette_segments
 
     def split_text_by_territory(self) -> dict[str, str]:
@@ -83,17 +86,6 @@ class ALAssociacaoMunicipiosSegmenter(AssociationSegmenter):
             num_linha += 1
 
         return territory_to_text_split
-
-    def _create_gazette_segments(self, text_split: dict[str, str]) -> list[dict]:
-        """
-        Receives a text split of a territory
-        and returns a list of dicts with the gazettes metadata
-        """
-        segmentos_diarios = []
-        for municipio, texto_diario in text_split.items():
-            segmento = self.build_segment(municipio, texto_diario)
-            segmentos_diarios.append(segmento.__dict__)
-        return segmentos_diarios
 
     def build_segment(self, territory, segment_text) -> GazetteSegment:
         file_checksum = self.get_checksum(segment_text)

@@ -9,13 +9,13 @@ class AssociationSegmenter:
     def __init__(self, association_gazette: str):
         self.association_gazette = association_gazette
 
-    def get_gazette_segments(self, *args, **kwargs) -> list[GazetteSegment]:
+    def get_gazette_segments(self, *args, **kwargs) -> list[Union[GazetteSegment, dict]]:
         """
         Returns a list of GazetteSegment
         """
         raise NotImplementedError
 
-    def split_text_by_territory(self) -> Union[dict[str, str], list[str]]:
+    def split_text_by_territory(self, *args, **kwargs) -> Union[dict[str, str], list[str]]:
         """
         Segment a association text by territory
         and returns a list of text segments
