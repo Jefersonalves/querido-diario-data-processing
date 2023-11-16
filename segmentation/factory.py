@@ -4,14 +4,14 @@ from segmentation.base import AssociationSegmenter
 from segmentation.segmenters import ALAssociacaoMunicipiosSegmenter
 
 
-def get_segmenter(association_gazzete: dict[str, Any]) -> AssociationSegmenter:
+def get_segmenter(association_spider_name: str, association_gazzete: dict[str, Any]) -> AssociationSegmenter:
     """
     Factory method to return a AssociationSegmenter
 
     Example
     -------
     >>> association_gazette = {
-        "territory_name": "al_associacao_municipios",
+        "territory_name": "Associação",
         "created_at": datetime.datetime.now(),
         "date": datetime.datetime.now(),
         "edition_number": 1,
@@ -33,9 +33,8 @@ def get_segmenter(association_gazzete: dict[str, Any]) -> AssociationSegmenter:
     See: https://github.com/faif/python-patterns/blob/master/patterns/creational/factory.py
     """
 
-    association_name = association_gazzete["territory_name"]
     segmenters = {
         "al_associacao_municipios": ALAssociacaoMunicipiosSegmenter,
     }
 
-    return segmenters[association_name](association_gazzete)
+    return segmenters[association_spider_name](association_gazzete)
