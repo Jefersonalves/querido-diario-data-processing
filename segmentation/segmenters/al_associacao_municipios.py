@@ -111,6 +111,7 @@ class ALAssociacaoMunicipiosSegmenter(AssociationSegmenter):
             power=self.association_gazette.get("power"),
             scraped_at=self.association_gazette.get("scraped_at"),
             state_code=self.association_gazette.get("state_code"),
+            url=self.association_gazette.get("url"),
 
             # segment specific values
             file_checksum=file_checksum,
@@ -119,7 +120,6 @@ class ALAssociacaoMunicipiosSegmenter(AssociationSegmenter):
             source_text=source_text,
             territory_id=territory_id,
             file_raw_txt=file_raw_txt,
-            url=url,
         )
 
     def _normalize_territory_name(self, municipio: str) -> str:
