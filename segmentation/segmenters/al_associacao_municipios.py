@@ -2,7 +2,7 @@ import re
 
 from typing import Any
 from segmentation.base import AssociationSegmenter, GazetteSegment
-
+from tasks.utils import get_checksum
 
 class ALAssociacaoMunicipiosSegmenter(AssociationSegmenter):
     def __init__(self, association_gazzete: dict[str, Any]):
@@ -88,7 +88,7 @@ class ALAssociacaoMunicipiosSegmenter(AssociationSegmenter):
         return territory_to_text_split
 
     def build_segment(self, territory, segment_text) -> GazetteSegment:
-        file_checksum = self.get_checksum(segment_text)
+        file_checksum = get_checksum(segment_text)
         processed = True
         territory_name = territory
         source_text = segment_text.rstrip()
